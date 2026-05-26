@@ -4,11 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"math/bits"
-	"reflect"
-	"runtime"
 	"sync"
-	"unsafe"
 )
 
 // Delim is documented at https://golang.org/pkg/encoding/json/#Delim
@@ -81,16 +77,13 @@ const (
 // applied when parsing json input.
 type ParseFlags uint32
 
-func (flags ParseFlags) has(f ParseFlags) bool {
-	return (flags & f) != 0
-}
+func (flags ParseFlags) has(f ParseFlags) bool { _ = "STUB: not implemented"; return false }
 
-func (f ParseFlags) kind() Kind {
-	return Kind((f >> kindOffset) & 0xFF)
-}
+func (f ParseFlags) kind() Kind { _ = "STUB: not implemented"; return *new(Kind) }
 
 func (f ParseFlags) withKind(kind Kind) ParseFlags {
-	return (f & ^(ParseFlags(0xFF) << kindOffset)) | (ParseFlags(kind) << kindOffset)
+	_ = "STUB: not implemented"
+	return *new(ParseFlags)
 }
 
 const (
@@ -189,170 +182,87 @@ const (
 )
 
 // Class returns the class of k.
-func (k Kind) Class() Kind { return Kind(1 << uint(bits.Len(uint(k))-1)) }
+func (k Kind) Class() Kind { _ = "STUB: not implemented"; return *new(Kind) }
 
 // Append acts like Marshal but appends the json representation to b instead of
 // always reallocating a new slice.
 func Append(b []byte, x any, flags AppendFlags) ([]byte, error) {
-	if x == nil {
-		// Special case for nil values because it makes the rest of the code
-		// simpler to assume that it won't be seeing nil pointers.
-		return append(b, "null"...), nil
-	}
+	_ = "STUB: not implemented"
 
-	t := reflect.TypeOf(x)
-	p := (*iface)(unsafe.Pointer(&x)).ptr
-
-	cache := cacheLoad()
-	c, found := cache[typeid(t)]
-
-	if !found {
-		c = constructCachedCodec(t, cache)
-	}
-
-	b, err := c.encode(encoder{flags: flags}, b, p)
-	runtime.KeepAlive(x)
-	return b, err
+	// Special case for nil values because it makes the rest of the code
+	// simpler to assume that it won't be seeing nil pointers.
+	return nil, nil
 }
 
 // Escape is a convenience helper to construct an escaped JSON string from s.
 // The function escales HTML characters, for more control over the escape
 // behavior and to write to a pre-allocated buffer, use AppendEscape.
 func Escape(s string) []byte {
+	_ = "STUB: not implemented"
 	// +10 for extra escape characters, maybe not enough and the buffer will
 	// be reallocated.
-	b := make([]byte, 0, len(s)+10)
-	return AppendEscape(b, s, EscapeHTML)
+	return nil
 }
 
 // AppendEscape appends s to b with the string escaped as a JSON value.
 // This will include the starting and ending quote characters, and the
 // appropriate characters will be escaped correctly for JSON encoding.
 func AppendEscape(b []byte, s string, flags AppendFlags) []byte {
-	e := encoder{flags: flags}
-	b, _ = e.encodeString(b, unsafe.Pointer(&s))
-	return b
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Unescape is a convenience helper to unescape a JSON value.
 // For more control over the unescape behavior and
 // to write to a pre-allocated buffer, use AppendUnescape.
-func Unescape(s []byte) []byte {
-	b := make([]byte, 0, len(s))
-	return AppendUnescape(b, s, ParseFlags(0))
-}
+func Unescape(s []byte) []byte { _ = "STUB: not implemented"; return nil }
 
 // AppendUnescape appends s to b with the string unescaped as a JSON value.
 // This will remove starting and ending quote characters, and the
 // appropriate characters will be escaped correctly as if JSON decoded.
 // New space will be reallocated if more space is needed.
 func AppendUnescape(b []byte, s []byte, flags ParseFlags) []byte {
-	d := decoder{flags: flags}
-	buf := new(string)
-	d.decodeString(s, unsafe.Pointer(buf))
-	return append(b, *buf...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Compact is documented at https://golang.org/pkg/encoding/json/#Compact
-func Compact(dst *bytes.Buffer, src []byte) error {
-	return json.Compact(dst, src)
-}
+func Compact(dst *bytes.Buffer, src []byte) error { _ = "STUB: not implemented"; return nil }
 
 // HTMLEscape is documented at https://golang.org/pkg/encoding/json/#HTMLEscape
-func HTMLEscape(dst *bytes.Buffer, src []byte) {
-	json.HTMLEscape(dst, src)
-}
+func HTMLEscape(dst *bytes.Buffer, src []byte) { _ = "STUB: not implemented"; return }
 
 // Indent is documented at https://golang.org/pkg/encoding/json/#Indent
 func Indent(dst *bytes.Buffer, src []byte, prefix, indent string) error {
-	return json.Indent(dst, src, prefix, indent)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Marshal is documented at https://golang.org/pkg/encoding/json/#Marshal
-func Marshal(x any) ([]byte, error) {
-	var err error
-	buf := encoderBufferPool.Get().(*encoderBuffer)
-
-	if buf.data, err = Append(buf.data[:0], x, EscapeHTML|SortMapKeys); err != nil {
-		return nil, err
-	}
-
-	b := make([]byte, len(buf.data))
-	copy(b, buf.data)
-	encoderBufferPool.Put(buf)
-	return b, nil
-}
+func Marshal(x any) ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // MarshalIndent is documented at https://golang.org/pkg/encoding/json/#MarshalIndent
 func MarshalIndent(x any, prefix, indent string) ([]byte, error) {
-	b, err := Marshal(x)
-
-	if err == nil {
-		tmp := &bytes.Buffer{}
-		tmp.Grow(2 * len(b))
-
-		Indent(tmp, b, prefix, indent)
-		b = tmp.Bytes()
-	}
-
-	return b, err
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Unmarshal is documented at https://golang.org/pkg/encoding/json/#Unmarshal
-func Unmarshal(b []byte, x any) error {
-	r, err := Parse(b, x, 0)
-	if len(r) != 0 {
-		if _, ok := err.(*SyntaxError); !ok {
-			// The encoding/json package prioritizes reporting errors caused by
-			// unexpected trailing bytes over other issues; here we emulate this
-			// behavior by overriding the error.
-			err = syntaxError(r, "invalid character '%c' after top-level value", r[0])
-		}
-	}
-	return err
-}
+func Unmarshal(b []byte, x any) error { _ = "STUB: not implemented"; return nil }
+
+// The encoding/json package prioritizes reporting errors caused by
+// unexpected trailing bytes over other issues; here we emulate this
+// behavior by overriding the error.
 
 // Parse behaves like Unmarshal but the caller can pass a set of flags to
 // configure the parsing behavior.
 func Parse(b []byte, x any, flags ParseFlags) ([]byte, error) {
-	t := reflect.TypeOf(x)
-	p := (*iface)(unsafe.Pointer(&x)).ptr
-
-	d := decoder{flags: flags | internalParseFlags(b)}
-
-	b = skipSpaces(b)
-
-	if t == nil || p == nil || t.Kind() != reflect.Ptr {
-		_, r, _, err := d.parseValue(b)
-		r = skipSpaces(r)
-		if err != nil {
-			return r, err
-		}
-		return r, &InvalidUnmarshalError{Type: t}
-	}
-	t = t.Elem()
-
-	cache := cacheLoad()
-	c, found := cache[typeid(t)]
-
-	if !found {
-		c = constructCachedCodec(t, cache)
-	}
-
-	r, err := c.decode(d, b, p)
-	return skipSpaces(r), err
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // Valid is documented at https://golang.org/pkg/encoding/json/#Valid
-func Valid(data []byte) bool {
-	data = skipSpaces(data)
-	d := decoder{flags: internalParseFlags(data)}
-	_, data, _, err := d.parseValue(data)
-	if err != nil {
-		return false
-	}
-	return len(skipSpaces(data)) == 0
-}
+func Valid(data []byte) bool { _ = "STUB: not implemented"; return false }
 
 // Decoder is documented at https://golang.org/pkg/encoding/json/#Decoder
 type Decoder struct {
@@ -365,22 +275,13 @@ type Decoder struct {
 }
 
 // NewDecoder is documented at https://golang.org/pkg/encoding/json/#NewDecoder
-func NewDecoder(r io.Reader) *Decoder { return &Decoder{reader: r} }
+func NewDecoder(r io.Reader) *Decoder { _ = "STUB: not implemented"; return nil }
 
 // Buffered is documented at https://golang.org/pkg/encoding/json/#Decoder.Buffered
-func (dec *Decoder) Buffered() io.Reader {
-	return bytes.NewReader(dec.remain)
-}
+func (dec *Decoder) Buffered() io.Reader { _ = "STUB: not implemented"; return *new(io.Reader) }
 
 // Decode is documented at https://golang.org/pkg/encoding/json/#Decoder.Decode
-func (dec *Decoder) Decode(v any) error {
-	raw, err := dec.readValue()
-	if err != nil {
-		return err
-	}
-	_, err = Parse(raw, v, dec.flags)
-	return err
-}
+func (dec *Decoder) Decode(v any) error { _ = "STUB: not implemented"; return nil }
 
 const (
 	minBufferSize = 32768
@@ -389,103 +290,48 @@ const (
 
 // readValue reads one JSON value from the buffer and returns its raw bytes. It
 // is optimized for the "one JSON value per line" case.
-func (dec *Decoder) readValue() (v []byte, err error) {
-	var n int
-	var r []byte
-	d := decoder{flags: dec.flags}
+func (dec *Decoder) readValue() (v []byte, err error) { _ = "STUB: not implemented"; return nil, nil }
 
-	for {
-		if len(dec.remain) != 0 {
-			v, r, _, err = d.parseValue(dec.remain)
-			if err == nil {
-				dec.remain, n = skipSpacesN(r)
-				dec.inputOffset += int64(len(v) + n)
-				return
-			}
-			if len(r) != 0 {
-				// Parsing of the next JSON value stopped at a position other
-				// than the end of the input buffer, which indicaates that a
-				// syntax error was encountered.
-				return
-			}
-		}
-
-		if err = dec.err; err != nil {
-			if len(dec.remain) != 0 && err == io.EOF {
-				err = io.ErrUnexpectedEOF
-			}
-			return
-		}
-
-		if dec.buffer == nil {
-			dec.buffer = make([]byte, 0, minBufferSize)
-		} else {
-			dec.buffer = dec.buffer[:copy(dec.buffer[:cap(dec.buffer)], dec.remain)]
-			dec.remain = nil
-		}
-
-		if (cap(dec.buffer) - len(dec.buffer)) < minReadSize {
-			buf := make([]byte, len(dec.buffer), 2*cap(dec.buffer))
-			copy(buf, dec.buffer)
-			dec.buffer = buf
-		}
-
-		n, err = io.ReadFull(dec.reader, dec.buffer[len(dec.buffer):cap(dec.buffer)])
-		if n > 0 {
-			dec.buffer = dec.buffer[:len(dec.buffer)+n]
-			if err != nil {
-				err = nil
-			}
-		} else if err == io.ErrUnexpectedEOF {
-			err = io.EOF
-		}
-		dec.remain, n = skipSpacesN(dec.buffer)
-		d.flags = dec.flags | internalParseFlags(dec.remain)
-		dec.inputOffset += int64(n)
-		dec.err = err
-	}
-}
+// Parsing of the next JSON value stopped at a position other
+// than the end of the input buffer, which indicaates that a
+// syntax error was encountered.
 
 // DisallowUnknownFields is documented at https://golang.org/pkg/encoding/json/#Decoder.DisallowUnknownFields
-func (dec *Decoder) DisallowUnknownFields() { dec.flags |= DisallowUnknownFields }
+func (dec *Decoder) DisallowUnknownFields() { _ = "STUB: not implemented"; return }
 
 // UseNumber is documented at https://golang.org/pkg/encoding/json/#Decoder.UseNumber
-func (dec *Decoder) UseNumber() { dec.flags |= UseNumber }
+func (dec *Decoder) UseNumber() { _ = "STUB: not implemented"; return }
 
 // DontCopyString is an extension to the standard encoding/json package
 // which instructs the decoder to not copy strings loaded from the json
 // payloads when possible.
-func (dec *Decoder) DontCopyString() { dec.flags |= DontCopyString }
+func (dec *Decoder) DontCopyString() { _ = "STUB: not implemented"; return }
 
 // DontCopyNumber is an extension to the standard encoding/json package
 // which instructs the decoder to not copy numbers loaded from the json
 // payloads.
-func (dec *Decoder) DontCopyNumber() { dec.flags |= DontCopyNumber }
+func (dec *Decoder) DontCopyNumber() { _ = "STUB: not implemented"; return }
 
 // DontCopyRawMessage is an extension to the standard encoding/json package
 // which instructs the decoder to not allocate RawMessage values in separate
 // memory buffers (see the documentation of the DontcopyRawMessage flag for
 // more detais).
-func (dec *Decoder) DontCopyRawMessage() { dec.flags |= DontCopyRawMessage }
+func (dec *Decoder) DontCopyRawMessage() { _ = "STUB: not implemented"; return }
 
 // DontMatchCaseInsensitiveStructFields is an extension to the standard
 // encoding/json package which instructs the decoder to not match object fields
 // against struct fields in a case-insensitive way, the field names have to
 // match exactly to be decoded into the struct field values.
-func (dec *Decoder) DontMatchCaseInsensitiveStructFields() {
-	dec.flags |= DontMatchCaseInsensitiveStructFields
-}
+func (dec *Decoder) DontMatchCaseInsensitiveStructFields() { _ = "STUB: not implemented"; return }
 
 // ZeroCopy is an extension to the standard encoding/json package which enables
 // all the copy optimizations of the decoder.
-func (dec *Decoder) ZeroCopy() { dec.flags |= ZeroCopy }
+func (dec *Decoder) ZeroCopy() { _ = "STUB: not implemented"; return }
 
 // InputOffset returns the input stream byte offset of the current decoder position.
 // The offset gives the location of the end of the most recently returned token
 // and the beginning of the next token.
-func (dec *Decoder) InputOffset() int64 {
-	return dec.inputOffset
-}
+func (dec *Decoder) InputOffset() int64 { _ = "STUB: not implemented"; return 0 }
 
 // Encoder is documented at https://golang.org/pkg/encoding/json/#Encoder
 type Encoder struct {
@@ -498,94 +344,29 @@ type Encoder struct {
 }
 
 // NewEncoder is documented at https://golang.org/pkg/encoding/json/#NewEncoder
-func NewEncoder(w io.Writer) *Encoder {
-	return &Encoder{writer: w, flags: EscapeHTML | SortMapKeys | appendNewline}
-}
+func NewEncoder(w io.Writer) *Encoder { _ = "STUB: not implemented"; return nil }
 
 // Encode is documented at https://golang.org/pkg/encoding/json/#Encoder.Encode
-func (enc *Encoder) Encode(v any) error {
-	if enc.err != nil {
-		return enc.err
-	}
-
-	var err error
-	buf := encoderBufferPool.Get().(*encoderBuffer)
-
-	buf.data, err = Append(buf.data[:0], v, enc.flags)
-	if err != nil {
-		encoderBufferPool.Put(buf)
-		return err
-	}
-
-	if (enc.flags & appendNewline) != 0 {
-		buf.data = append(buf.data, '\n')
-	}
-	b := buf.data
-
-	if enc.prefix != "" || enc.indent != "" {
-		if enc.buffer == nil {
-			enc.buffer = new(bytes.Buffer)
-			enc.buffer.Grow(2 * len(buf.data))
-		} else {
-			enc.buffer.Reset()
-		}
-		Indent(enc.buffer, buf.data, enc.prefix, enc.indent)
-		b = enc.buffer.Bytes()
-	}
-
-	if _, err := enc.writer.Write(b); err != nil {
-		enc.err = err
-	}
-
-	encoderBufferPool.Put(buf)
-	return err
-}
+func (enc *Encoder) Encode(v any) error { _ = "STUB: not implemented"; return nil }
 
 // SetEscapeHTML is documented at https://golang.org/pkg/encoding/json/#Encoder.SetEscapeHTML
-func (enc *Encoder) SetEscapeHTML(on bool) {
-	if on {
-		enc.flags |= EscapeHTML
-	} else {
-		enc.flags &= ^EscapeHTML
-	}
-}
+func (enc *Encoder) SetEscapeHTML(on bool) { _ = "STUB: not implemented"; return }
 
 // SetIndent is documented at https://golang.org/pkg/encoding/json/#Encoder.SetIndent
-func (enc *Encoder) SetIndent(prefix, indent string) {
-	enc.prefix = prefix
-	enc.indent = indent
-}
+func (enc *Encoder) SetIndent(prefix, indent string) { _ = "STUB: not implemented"; return }
 
 // SetSortMapKeys is an extension to the standard encoding/json package which
 // allows the program to toggle sorting of map keys on and off.
-func (enc *Encoder) SetSortMapKeys(on bool) {
-	if on {
-		enc.flags |= SortMapKeys
-	} else {
-		enc.flags &= ^SortMapKeys
-	}
-}
+func (enc *Encoder) SetSortMapKeys(on bool) { _ = "STUB: not implemented"; return }
 
 // SetTrustRawMessage skips value checking when encoding a raw json message. It should only
 // be used if the values are known to be valid json, e.g. because they were originally created
 // by json.Unmarshal.
-func (enc *Encoder) SetTrustRawMessage(on bool) {
-	if on {
-		enc.flags |= TrustRawMessage
-	} else {
-		enc.flags &= ^TrustRawMessage
-	}
-}
+func (enc *Encoder) SetTrustRawMessage(on bool) { _ = "STUB: not implemented"; return }
 
 // SetAppendNewline is an extension to the standard encoding/json package which
 // allows the program to toggle the addition of a newline in Encode on or off.
-func (enc *Encoder) SetAppendNewline(on bool) {
-	if on {
-		enc.flags |= appendNewline
-	} else {
-		enc.flags &= ^appendNewline
-	}
-}
+func (enc *Encoder) SetAppendNewline(on bool) { _ = "STUB: not implemented"; return }
 
 var encoderBufferPool = sync.Pool{
 	New: func() any { return &encoderBuffer{data: make([]byte, 0, 4096)} },

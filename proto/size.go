@@ -1,24 +1,15 @@
 package proto
 
 import (
-	"math/bits"
 	"unsafe"
 )
 
 type sizeFunc = func(unsafe.Pointer, flags) int
 
-func sizeOfVarint(v uint64) int {
-	return (bits.Len64(v|1) + 6) / 7
-}
+func sizeOfVarint(v uint64) int { _ = "STUB: not implemented"; return 0 }
 
-func sizeOfVarintZigZag(v int64) int {
-	return sizeOfVarint((uint64(v) << 1) ^ uint64(v>>63))
-}
+func sizeOfVarintZigZag(v int64) int { _ = "STUB: not implemented"; return 0 }
 
-func sizeOfVarlen(n int) int {
-	return sizeOfVarint(uint64(n)) + n
-}
+func sizeOfVarlen(n int) int { _ = "STUB: not implemented"; return 0 }
 
-func sizeOfTag(f fieldNumber, t wireType) int {
-	return sizeOfVarint(uint64(f)<<3 | uint64(t))
-}
+func sizeOfTag(f fieldNumber, t wireType) int { _ = "STUB: not implemented"; return 0 }

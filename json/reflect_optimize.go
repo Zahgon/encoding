@@ -16,15 +16,6 @@ func unsafe_NewArray(rtype unsafe.Pointer, length int) unsafe.Pointer
 func typedslicecopy(elemType unsafe.Pointer, dst, src slice) int
 
 func extendSlice(t reflect.Type, s *slice, n int) slice {
-	elemTypeRef := t.Elem()
-	elemTypePtr := ((*iface)(unsafe.Pointer(&elemTypeRef))).ptr
-
-	d := slice{
-		data: unsafe_NewArray(elemTypePtr, n),
-		len:  s.len,
-		cap:  n,
-	}
-
-	typedslicecopy(elemTypePtr, d, *s)
-	return d
+	_ = "STUB: not implemented"
+	return *new(slice)
 }

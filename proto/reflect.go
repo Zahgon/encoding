@@ -1,10 +1,7 @@
 package proto
 
 import (
-	"fmt"
 	"reflect"
-	"strconv"
-	"strings"
 	"sync"
 	"sync/atomic"
 )
@@ -124,92 +121,11 @@ type Type interface {
 //	struct  | message
 //
 // Pointer types are also supported and automatically dereferenced.
-func TypeOf(t reflect.Type) Type {
-	cache, _ := typesCache.Load().(map[reflect.Type]Type)
-	if r, ok := cache[t]; ok {
-		return r
-	}
-
-	typesMutex.Lock()
-	defer typesMutex.Unlock()
-
-	cache, _ = typesCache.Load().(map[reflect.Type]Type)
-	if r, ok := cache[t]; ok {
-		return r
-	}
-
-	seen := map[reflect.Type]Type{}
-	r := typeOf(t, seen)
-
-	newCache := make(map[reflect.Type]Type, len(cache)+len(seen))
-	for t, r := range cache {
-		newCache[t] = r
-	}
-
-	for t, r := range seen {
-		if x, ok := newCache[t]; ok {
-			r = x
-		} else {
-			newCache[t] = r
-		}
-	}
-
-	if x, ok := newCache[t]; ok {
-		r = x
-	} else {
-		newCache[t] = r
-	}
-
-	typesCache.Store(newCache)
-	return r
-}
+func TypeOf(t reflect.Type) Type { _ = "STUB: not implemented"; return *new(Type) }
 
 func typeOf(t reflect.Type, seen map[reflect.Type]Type) Type {
-	if r, ok := seen[t]; ok {
-		return r
-	}
-
-	switch {
-	case implements(t, messageType):
-		return &opaqueMessageType{}
-	case implements(t, customMessageType) && !implements(t, protoMessageType):
-		return &primitiveTypes[Bytes]
-	}
-
-	switch t.Kind() {
-	case reflect.Bool:
-		return &primitiveTypes[Bool]
-	case reflect.Int:
-		return &primitiveTypes[Int64]
-	case reflect.Int32:
-		return &primitiveTypes[Int32]
-	case reflect.Int64:
-		return &primitiveTypes[Int64]
-	case reflect.Uint:
-		return &primitiveTypes[Uint64]
-	case reflect.Uint32:
-		return &primitiveTypes[Uint32]
-	case reflect.Uint64:
-		return &primitiveTypes[Uint64]
-	case reflect.Float32:
-		return &primitiveTypes[Float]
-	case reflect.Float64:
-		return &primitiveTypes[Double]
-	case reflect.String:
-		return &primitiveTypes[String]
-	case reflect.Slice, reflect.Array:
-		if t.Elem().Kind() == reflect.Uint8 {
-			return &primitiveTypes[Bytes]
-		}
-	case reflect.Map:
-		return mapTypeOf(t, seen)
-	case reflect.Struct:
-		return structTypeOf(t, seen)
-	case reflect.Ptr:
-		return typeOf(t.Elem(), seen)
-	}
-
-	panic(fmt.Errorf("cannot construct protobuf type from go value of type %s", t))
+	_ = "STUB: not implemented"
+	return *new(Type)
 }
 
 var (
@@ -232,52 +148,30 @@ type primitiveType struct {
 	zigzag Kind
 }
 
-func (t *primitiveType) String() string {
-	return t.name
-}
+func (t *primitiveType) String() string { _ = "STUB: not implemented"; return "" }
 
-func (t *primitiveType) Name() string {
-	return t.name
-}
+func (t *primitiveType) Name() string { _ = "STUB: not implemented"; return "" }
 
-func (t *primitiveType) Kind() Kind {
-	return t.kind
-}
+func (t *primitiveType) Kind() Kind { _ = "STUB: not implemented"; return *new(Kind) }
 
-func (t *primitiveType) Key() Type {
-	panic(fmt.Errorf("proto.Type.Key: called on unsupported type: %s", t))
-}
+func (t *primitiveType) Key() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-func (t *primitiveType) Elem() Type {
-	panic(fmt.Errorf("proto.Type.Elem: called on unsupported type: %s", t))
-}
+func (t *primitiveType) Elem() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-func (t *primitiveType) WireType() WireType {
-	return t.wire
-}
+func (t *primitiveType) WireType() WireType { _ = "STUB: not implemented"; return *new(WireType) }
 
-func (t *primitiveType) NumField() int {
-	return 0
-}
+func (t *primitiveType) NumField() int { _ = "STUB: not implemented"; return 0 }
 
-func (t *primitiveType) Field(int) Field {
-	panic(fmt.Errorf("proto.Type.Field: called on unsupported type: %s", t))
-}
+func (t *primitiveType) Field(int) Field { _ = "STUB: not implemented"; return *new(Field) }
 
-func (t *primitiveType) FieldByName(string) Field {
-	panic(fmt.Errorf("proto.Type.FieldByName: called on unsupported type: %s", t))
-}
+func (t *primitiveType) FieldByName(string) Field { _ = "STUB: not implemented"; return *new(Field) }
 
 func (t *primitiveType) FieldByNumber(FieldNumber) Field {
-	panic(fmt.Errorf("proto.Type.FieldByNumber: called on unsupported type: %s", t))
+	_ = "STUB: not implemented"
+	return *new(Field)
 }
 
-func (t *primitiveType) ZigZag() Type {
-	if t.zigzag == 0 {
-		panic(fmt.Errorf("proto.Type.ZigZag: called on unsupported type: %s", t))
-	}
-	return &primitiveTypes[t.zigzag]
-}
+func (t *primitiveType) ZigZag() Type { _ = "STUB: not implemented"; return *new(Type) }
 
 var primitiveTypes = [...]primitiveType{
 	{name: "bool", kind: Bool, wire: Varint},
@@ -298,11 +192,8 @@ var primitiveTypes = [...]primitiveType{
 }
 
 func mapTypeOf(t reflect.Type, seen map[reflect.Type]Type) *mapType {
-	mt := &mapType{}
-	seen[t] = mt
-	mt.key = typeOf(t.Key(), seen)
-	mt.elem = typeOf(t.Elem(), seen)
-	return mt
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type mapType struct {
@@ -310,118 +201,40 @@ type mapType struct {
 	elem Type
 }
 
-func (t *mapType) String() string {
-	return fmt.Sprintf("map<%s, %s>", t.key.Name(), t.elem.Name())
-}
+func (t *mapType) String() string { _ = "STUB: not implemented"; return "" }
 
-func (t *mapType) Name() string {
-	return t.String()
-}
+func (t *mapType) Name() string { _ = "STUB: not implemented"; return "" }
 
-func (t *mapType) Kind() Kind {
-	return Map
-}
+func (t *mapType) Kind() Kind { _ = "STUB: not implemented"; return *new(Kind) }
 
-func (t *mapType) Key() Type {
-	return t.key
-}
+func (t *mapType) Key() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-func (t *mapType) Elem() Type {
-	return t.elem
-}
+func (t *mapType) Elem() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-func (t *mapType) WireType() WireType {
-	return Varlen
-}
+func (t *mapType) WireType() WireType { _ = "STUB: not implemented"; return *new(WireType) }
 
-func (t *mapType) NumField() int {
-	return 0
-}
+func (t *mapType) NumField() int { _ = "STUB: not implemented"; return 0 }
 
-func (t *mapType) Field(int) Field {
-	panic(fmt.Errorf("proto.Type.Field: called on unsupported type: %s", t))
-}
+func (t *mapType) Field(int) Field { _ = "STUB: not implemented"; return *new(Field) }
 
-func (t *mapType) FieldByName(string) Field {
-	panic(fmt.Errorf("proto.Type.FieldByName: called on unsupported type: %s", t))
-}
+func (t *mapType) FieldByName(string) Field { _ = "STUB: not implemented"; return *new(Field) }
 
-func (t *mapType) FieldByNumber(FieldNumber) Field {
-	panic(fmt.Errorf("proto.Type.FieldByNumber: called on unsupported type: %s", t))
-}
+func (t *mapType) FieldByNumber(FieldNumber) Field { _ = "STUB: not implemented"; return *new(Field) }
 
-func (t *mapType) ZigZag() Type {
-	panic(fmt.Errorf("proto.Type.ZigZag: called on unsupported type: %s", t))
-}
+func (t *mapType) ZigZag() Type { _ = "STUB: not implemented"; return *new(Type) }
 
 func structTypeOf(t reflect.Type, seen map[reflect.Type]Type) *structType {
-	st := &structType{
-		name:           t.Name(),
-		fieldsByName:   make(map[string]int),
-		fieldsByNumber: make(map[FieldNumber]int),
-	}
-
-	seen[t] = st
-
-	fieldNumber := FieldNumber(0)
-	taggedFields := FieldNumber(0)
-
-	for i := range t.NumField() {
-		f := t.Field(i)
-
-		if f.PkgPath != "" {
-			continue // unexported
-		}
-
-		repeated := false
-		if f.Type.Kind() == reflect.Slice && f.Type.Elem().Kind() != reflect.Uint8 {
-			repeated = true
-			f.Type = f.Type.Elem() // for typeOf
-		}
-
-		fieldName := f.Name
-		fieldType := typeOf(f.Type, seen)
-
-		if tag, ok := f.Tag.Lookup("protobuf"); ok {
-			if fieldNumber != taggedFields {
-				panic("conflicting use of struct tag and naked fields")
-			}
-			t, err := parseStructTag(tag)
-			if err != nil {
-				panic(err)
-			}
-
-			fieldName = t.name
-			fieldNumber = t.fieldNumber
-			taggedFields = t.fieldNumber
-			// Because maps are represented as repeated varlen fields on the
-			// wire, the generated protobuf code sets the `rep` attribute on
-			// the struct fields.
-			repeated = t.repeated && f.Type.Kind() != reflect.Map
-
-			if t.zigzag {
-				fieldType = fieldType.ZigZag()
-			}
-		} else if fieldNumber == 0 && len(st.fields) != 0 {
-			panic("conflicting use of struct tag and naked fields")
-		} else {
-			fieldNumber++
-		}
-
-		index := len(st.fields)
-		st.fields = append(st.fields, Field{
-			Index:    index,
-			Number:   fieldNumber,
-			Name:     fieldName,
-			Type:     fieldType,
-			Repeated: repeated,
-		})
-		st.fieldsByName[fieldName] = index
-		st.fieldsByNumber[fieldNumber] = index
-	}
-
-	return st
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// unexported
+
+// for typeOf
+
+// Because maps are represented as repeated varlen fields on the
+// wire, the generated protobuf code sets the `rep` attribute on
+// the struct fields.
 
 type structType struct {
 	name           string
@@ -430,92 +243,30 @@ type structType struct {
 	fieldsByNumber map[FieldNumber]int
 }
 
-func (t *structType) String() string {
-	s := strings.Builder{}
-	s.WriteString("message ")
+func (t *structType) String() string { _ = "STUB: not implemented"; return "" }
 
-	if t.name != "" {
-		s.WriteString(t.name)
-		s.WriteString(" ")
-	}
+func (t *structType) Name() string { _ = "STUB: not implemented"; return "" }
 
-	s.WriteString("{")
+func (t *structType) Kind() Kind { _ = "STUB: not implemented"; return *new(Kind) }
 
-	for _, f := range t.fields {
-		s.WriteString("\n  ")
+func (t *structType) Key() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-		if f.Repeated {
-			s.WriteString("repeated ")
-		} else {
-		}
+func (t *structType) Elem() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-		s.WriteString(f.Type.Name())
-		s.WriteString(" ")
-		s.WriteString(f.Name)
-		s.WriteString(" = ")
-		s.WriteString(strconv.Itoa(int(f.Number)))
-		s.WriteString(";")
-	}
+func (t *structType) WireType() WireType { _ = "STUB: not implemented"; return *new(WireType) }
 
-	if len(t.fields) == 0 {
-		s.WriteString("}")
-	} else {
-		s.WriteString("\n}")
-	}
+func (t *structType) NumField() int { _ = "STUB: not implemented"; return 0 }
 
-	return s.String()
-}
+func (t *structType) Field(index int) Field { _ = "STUB: not implemented"; return *new(Field) }
 
-func (t *structType) Name() string {
-	return t.name
-}
-
-func (t *structType) Kind() Kind {
-	return Struct
-}
-
-func (t *structType) Key() Type {
-	panic(fmt.Errorf("proto.Type.Key: called on unsupported type: %s", t.name))
-}
-
-func (t *structType) Elem() Type {
-	panic(fmt.Errorf("proto.Type.Elem: called on unsupported type: %s", t.name))
-}
-
-func (t *structType) WireType() WireType {
-	return Varlen
-}
-
-func (t *structType) NumField() int {
-	return len(t.fields)
-}
-
-func (t *structType) Field(index int) Field {
-	if index >= 0 && index < len(t.fields) {
-		return t.fields[index]
-	}
-	panic(fmt.Errorf("proto.Type.Field: protobuf message field out of bounds: %d/%d", index, len(t.fields)))
-}
-
-func (t *structType) FieldByName(name string) Field {
-	i, ok := t.fieldsByName[name]
-	if ok {
-		return t.fields[i]
-	}
-	panic(fmt.Errorf("proto.Type.FieldByName: protobuf message has not field named %q", name))
-}
+func (t *structType) FieldByName(name string) Field { _ = "STUB: not implemented"; return *new(Field) }
 
 func (t *structType) FieldByNumber(number FieldNumber) Field {
-	i, ok := t.fieldsByNumber[number]
-	if ok {
-		return t.fields[i]
-	}
-	panic(fmt.Errorf("proto.Type.FieldByNumber: protobuf message has no field number %d", number))
+	_ = "STUB: not implemented"
+	return *new(Field)
 }
 
-func (t *structType) ZigZag() Type {
-	panic(fmt.Errorf("proto.Type.ZigZag: called on unsupported type: %s", t.name))
-}
+func (t *structType) ZigZag() Type { _ = "STUB: not implemented"; return *new(Type) }
 
 type structTag struct {
 	name        string
@@ -530,125 +281,42 @@ type structTag struct {
 }
 
 func parseStructTag(tag string) (structTag, error) {
-	t := structTag{
-		version:    2,
-		extensions: make(map[string]string),
-	}
-
-	for i, f := range splitFields(tag) {
-		switch i {
-		case 0:
-			switch f {
-			case "varint":
-				t.wireType = Varint
-			case "bytes":
-				t.wireType = Varlen
-			case "fixed32":
-				t.wireType = Fixed32
-			case "fixed64":
-				t.wireType = Fixed64
-			case "zigzag32":
-				t.wireType = Varint
-				t.zigzag = true
-			case "zigzag64":
-				t.wireType = Varint
-				t.zigzag = true
-			default:
-				return t, fmt.Errorf("unsupported wire type in struct tag %q: %s", tag, f)
-			}
-
-		case 1:
-			n, err := strconv.Atoi(f)
-			if err != nil {
-				return t, fmt.Errorf("unsupported field number in struct tag %q: %w", tag, err)
-			}
-			t.fieldNumber = FieldNumber(n)
-
-		case 2:
-			switch f {
-			case "opt":
-				// not sure what this is for
-			case "rep":
-				t.repeated = true
-			default:
-				return t, fmt.Errorf("unsupported field option in struct tag %q: %s", tag, f)
-			}
-
-		default:
-			name, value := splitNameValue(f)
-			switch name {
-			case "name":
-				t.name = value
-			case "enum":
-				t.enum = value
-			case "json":
-				t.json = value
-			case "proto3":
-				t.version = 3
-			default:
-				t.extensions[name] = value
-			}
-		}
-	}
-
-	return t, nil
+	_ = "STUB: not implemented"
+	return *new(structTag), nil
 }
 
-func splitFields(s string) []string {
-	return strings.Split(s, ",")
-}
+// not sure what this is for
 
-func splitNameValue(s string) (name, value string) {
-	i := strings.IndexByte(s, '=')
-	if i < 0 {
-		return strings.TrimSpace(s), ""
-	} else {
-		return strings.TrimSpace(s[:i]), strings.TrimSpace(s[i+1:])
-	}
-}
+func splitFields(s string) []string { _ = "STUB: not implemented"; return nil }
+
+func splitNameValue(s string) (name, value string) { _ = "STUB: not implemented"; return "", "" }
 
 type opaqueMessageType struct{}
 
-func (t *opaqueMessageType) String() string {
-	return "bytes"
-}
+func (t *opaqueMessageType) String() string { _ = "STUB: not implemented"; return "" }
 
-func (t *opaqueMessageType) Name() string {
-	return "bytes"
-}
+func (t *opaqueMessageType) Name() string { _ = "STUB: not implemented"; return "" }
 
-func (t *opaqueMessageType) Kind() Kind {
-	return Struct
-}
+func (t *opaqueMessageType) Kind() Kind { _ = "STUB: not implemented"; return *new(Kind) }
 
-func (t *opaqueMessageType) Key() Type {
-	panic(fmt.Errorf("proto.Type.Key: called on unsupported type: %s", t))
-}
+func (t *opaqueMessageType) Key() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-func (t *opaqueMessageType) Elem() Type {
-	panic(fmt.Errorf("proto.Type.Elem: called on unsupported type: %s", t))
-}
+func (t *opaqueMessageType) Elem() Type { _ = "STUB: not implemented"; return *new(Type) }
 
-func (t *opaqueMessageType) WireType() WireType {
-	return Varlen
-}
+func (t *opaqueMessageType) WireType() WireType { _ = "STUB: not implemented"; return *new(WireType) }
 
-func (t *opaqueMessageType) NumField() int {
-	return 0
-}
+func (t *opaqueMessageType) NumField() int { _ = "STUB: not implemented"; return 0 }
 
-func (t *opaqueMessageType) Field(int) Field {
-	panic(fmt.Errorf("proto.Type.Field: called on unsupported type: %s", t))
-}
+func (t *opaqueMessageType) Field(int) Field { _ = "STUB: not implemented"; return *new(Field) }
 
 func (t *opaqueMessageType) FieldByName(string) Field {
-	panic(fmt.Errorf("proto.Type.FieldByName: called on unsupported type: %s", t))
+	_ = "STUB: not implemented"
+	return *new(Field)
 }
 
 func (t *opaqueMessageType) FieldByNumber(FieldNumber) Field {
-	panic(fmt.Errorf("proto.Type.FieldByNumber: called on unsupported type: %s", t))
+	_ = "STUB: not implemented"
+	return *new(Field)
 }
 
-func (t *opaqueMessageType) ZigZag() Type {
-	panic(fmt.Errorf("proto.Type.ZigZag: called on unsupported type: %s", t))
-}
+func (t *opaqueMessageType) ZigZag() Type { _ = "STUB: not implemented"; return *new(Type) }

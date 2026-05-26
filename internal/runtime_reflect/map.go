@@ -12,49 +12,42 @@ package runtime_reflect
 
 import "unsafe"
 
-func Assign(typ, dst, src unsafe.Pointer) {
-	typedmemmove(typ, dst, src)
-}
+func Assign(typ, dst, src unsafe.Pointer) { _ = "STUB: not implemented"; return }
 
 func MapAssign(t, m, k unsafe.Pointer) unsafe.Pointer {
-	return mapassign(t, m, k)
+	_ = "STUB: not implemented"
+	return *new(unsafe.Pointer)
 }
 
 func MakeMap(t unsafe.Pointer, cap int) unsafe.Pointer {
-	return makemap(t, cap)
+	_ = "STUB: not implemented"
+	return *new(unsafe.Pointer)
 }
 
 type MapIter struct{ hiter }
 
-func (it *MapIter) Init(t unsafe.Pointer, m unsafe.Pointer) {
-	mapiterinit(t, m, &it.hiter)
+func (it *MapIter) Init(t unsafe.Pointer, m unsafe.Pointer) { _ = "STUB: not implemented"; return }
+
+func (it *MapIter) Done() { _ = "STUB: not implemented"; return }
+
+func (it *MapIter) Next() { _ = "STUB: not implemented"; return }
+
+func (it *MapIter) HasNext() bool { _ = "STUB: not implemented"; return false }
+
+func (it *MapIter) Key() unsafe.Pointer { _ = "STUB: not implemented"; return *new(unsafe.Pointer) }
+
+func (it *MapIter) Value() unsafe.Pointer {
+	_ = "STUB: not implemented"
+
+	// copied from src/runtime/map.go, all pointer types replaced with
+	// unsafe.Pointer.
+	//
+	// Alternatively we could get away with a heap allocation and only
+	// defining key and val if we were using reflect.mapiterinit instead,
+	// which returns a heap-allocated *hiter.
+	return *new(unsafe.Pointer)
 }
 
-func (it *MapIter) Done() {
-	if it.h != nil {
-		it.key = nil
-		mapiternext(&it.hiter)
-	}
-}
-
-func (it *MapIter) Next() {
-	mapiternext(&it.hiter)
-}
-
-func (it *MapIter) HasNext() bool {
-	return it.key != nil
-}
-
-func (it *MapIter) Key() unsafe.Pointer { return it.key }
-
-func (it *MapIter) Value() unsafe.Pointer { return it.value }
-
-// copied from src/runtime/map.go, all pointer types replaced with
-// unsafe.Pointer.
-//
-// Alternatively we could get away with a heap allocation and only
-// defining key and val if we were using reflect.mapiterinit instead,
-// which returns a heap-allocated *hiter.
 type hiter struct {
 	key         unsafe.Pointer // nil when iteration is done
 	value       unsafe.Pointer

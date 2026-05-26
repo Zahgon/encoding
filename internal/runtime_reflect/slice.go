@@ -8,33 +8,23 @@ type Slice struct {
 	cap  int
 }
 
-func (s *Slice) Cap() int {
-	return s.cap
-}
+func (s *Slice) Cap() int { _ = "STUB: not implemented"; return 0 }
 
-func (s *Slice) Len() int {
-	return s.len
-}
+func (s *Slice) Len() int { _ = "STUB: not implemented"; return 0 }
 
-func (s *Slice) SetLen(n int) {
-	s.len = n
-}
+func (s *Slice) SetLen(n int) { _ = "STUB: not implemented"; return }
 
 func (s *Slice) Index(i int, elemSize uintptr) unsafe.Pointer {
-	return unsafe.Pointer(uintptr(s.data) + (uintptr(i) * elemSize))
+	_ = "STUB: not implemented"
+	return *new(unsafe.Pointer)
 }
 
 func MakeSlice(elemType unsafe.Pointer, len, cap int) Slice {
-	return Slice{
-		data: newarray(elemType, cap),
-		len:  len,
-		cap:  cap,
-	}
+	_ = "STUB: not implemented"
+	return *new(Slice)
 }
 
-func CopySlice(elemType unsafe.Pointer, dst, src Slice) int {
-	return typedslicecopy(elemType, dst, src)
-}
+func CopySlice(elemType unsafe.Pointer, dst, src Slice) int { _ = "STUB: not implemented"; return 0 }
 
 //go:linkname newarray runtime.newarray
 func newarray(t unsafe.Pointer, n int) unsafe.Pointer

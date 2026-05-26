@@ -35,145 +35,41 @@ const (
 // Valid check value to verify whether or not it is a valid iso8601 time
 // representation.
 func Valid(value string, flags ValidFlags) bool {
-	var ok bool
+	_ = "STUB: not implemented"
 
 	// year
-	if value, ok = readDigits(value, 4, 4); !ok {
-		return false
-	}
-
-	if value, ok = readByte(value, '-'); !ok {
-		return false
-	}
-
-	// month
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	if value, ok = readByte(value, '-'); !ok {
-		return false
-	}
-
-	// day
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	if len(value) == 0 && (flags&AllowMissingTime) != 0 {
-		return true // date only
-	}
-
-	// separator
-	if value, ok = readByte(value, 'T'); !ok {
-		if (flags & AllowSpaceSeparator) == 0 {
-			return false
-		}
-		if value, ok = readByte(value, ' '); !ok {
-			return false
-		}
-	}
-
-	// hour
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	if value, ok = readByte(value, ':'); !ok {
-		return false
-	}
-
-	// minute
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	if value, ok = readByte(value, ':'); !ok {
-		return false
-	}
-
-	// second
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	// microsecond
-	if value, ok = readByte(value, '.'); !ok {
-		if (flags & AllowMissingSubsecond) == 0 {
-			return false
-		}
-	} else {
-		if value, ok = readDigits(value, 1, 9); !ok {
-			return false
-		}
-	}
-
-	if len(value) == 0 && (flags&AllowMissingTimezone) != 0 {
-		return true // date and time
-	}
-
-	// timezone
-	if value, ok = readByte(value, 'Z'); ok {
-		return len(value) == 0
-	}
-
-	if (flags & AllowSpaceSeparator) != 0 {
-		value, _ = readByte(value, ' ')
-	}
-
-	if value, ok = readByte(value, '+'); !ok {
-		if value, ok = readByte(value, '-'); !ok {
-			return false
-		}
-	}
-
-	// timezone hour
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	if value, ok = readByte(value, ':'); !ok {
-		if (flags & AllowNumericTimezone) == 0 {
-			return false
-		}
-	}
-
-	// timezone minute
-	if value, ok = readDigits(value, 2, 2); !ok {
-		return false
-	}
-
-	return len(value) == 0
+	return false
 }
+
+// month
+
+// day
+
+// date only
+
+// separator
+
+// hour
+
+// minute
+
+// second
+
+// microsecond
+
+// date and time
+
+// timezone
+
+// timezone hour
+
+// timezone minute
 
 func readDigits(value string, min, max int) (string, bool) {
-	if len(value) < min {
-		return value, false
-	}
-
-	i := 0
-
-	for i < max && i < len(value) && isDigit(value[i]) {
-		i++
-	}
-
-	if i < max && i < min {
-		return value, false
-	}
-
-	return value[i:], true
+	_ = "STUB: not implemented"
+	return "", false
 }
 
-func readByte(value string, c byte) (string, bool) {
-	if len(value) == 0 {
-		return value, false
-	}
-	if value[0] != c {
-		return value, false
-	}
-	return value[1:], true
-}
+func readByte(value string, c byte) (string, bool) { _ = "STUB: not implemented"; return "", false }
 
-func isDigit(c byte) bool {
-	return '0' <= c && c <= '9'
-}
+func isDigit(c byte) bool { _ = "STUB: not implemented"; return false }

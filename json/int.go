@@ -49,50 +49,15 @@ var intBELookup = [100]uint16{
 
 var intLookup = [2]*[100]uint16{&intLELookup, &intBELookup}
 
-func appendInt(b []byte, n int64) []byte {
-	return formatInteger(b, uint64(n), n < 0)
-}
+func appendInt(b []byte, n int64) []byte { _ = "STUB: not implemented"; return nil }
 
-func appendUint(b []byte, n uint64) []byte {
-	return formatInteger(b, n, false)
-}
+func appendUint(b []byte, n uint64) []byte { _ = "STUB: not implemented"; return nil }
 
 func formatInteger(out []byte, n uint64, negative bool) []byte {
-	if !negative {
-		if n < 10 {
-			return append(out, byte(n+'0'))
-		} else if n < 100 {
-			u := intLELookup[n]
-			return append(out, byte(u), byte(u>>8))
-		}
-	} else {
-		n = -n
-	}
-
-	lookup := intLookup[endianness]
-
-	var b [22]byte
-	u := (*[11]uint16)(unsafe.Pointer(&b))
-	i := 11
-
-	for n >= 100 {
-		j := n % 100
-		n /= 100
-		i--
-		u[i] = lookup[j]
-	}
-
-	i--
-	u[i] = lookup[n]
-
-	i *= 2 // convert to byte index
-	if n < 10 {
-		i++ // remove leading zero
-	}
-	if negative {
-		i--
-		b[i] = '-'
-	}
-
-	return append(out, b[i:]...)
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// convert to byte index
+
+// remove leading zero

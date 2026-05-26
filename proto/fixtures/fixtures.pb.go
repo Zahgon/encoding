@@ -7,11 +7,11 @@
 package fixtures
 
 import (
+	sync "sync"
+
 	proto "github.com/golang/protobuf/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
@@ -44,121 +44,43 @@ type Message struct {
 	Float64       float64 `protobuf:"fixed64,41,opt,name=float64,proto3" json:"float64,omitempty"`
 }
 
-func (x *Message) Reset() {
-	*x = Message{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_fixtures_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
+func (x *Message) Reset() { _ = "STUB: not implemented"; return }
 
-func (x *Message) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
+func (x *Message) String() string { _ = "STUB: not implemented"; return "" }
 
-func (*Message) ProtoMessage() {}
+func (*Message) ProtoMessage() { _ = "STUB: not implemented"; return }
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_fixtures_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
+	_ = "STUB: not implemented"
+	return *new(protoreflect.Message)
 }
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
-func (*Message) Descriptor() ([]byte, []int) {
-	return file_fixtures_proto_rawDescGZIP(), []int{0}
-}
+func (*Message) Descriptor() ([]byte, []int) { _ = "STUB: not implemented"; return nil, nil }
 
-func (x *Message) GetA() int64 {
-	if x != nil {
-		return x.A
-	}
-	return 0
-}
+func (x *Message) GetA() int64 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetB() uint32 {
-	if x != nil {
-		return x.B
-	}
-	return 0
-}
+func (x *Message) GetB() uint32 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetC() uint64 {
-	if x != nil {
-		return x.C
-	}
-	return 0
-}
+func (x *Message) GetC() uint64 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetD() string {
-	if x != nil {
-		return x.D
-	}
-	return ""
-}
+func (x *Message) GetD() string { _ = "STUB: not implemented"; return "" }
 
-func (x *Message) GetSigned_1() int32 {
-	if x != nil {
-		return x.Signed_1
-	}
-	return 0
-}
+func (x *Message) GetSigned_1() int32 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetSigned_2() int64 {
-	if x != nil {
-		return x.Signed_2
-	}
-	return 0
-}
+func (x *Message) GetSigned_2() int64 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetFixed_1() uint32 {
-	if x != nil {
-		return x.Fixed_1
-	}
-	return 0
-}
+func (x *Message) GetFixed_1() uint32 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetFixed_2() uint64 {
-	if x != nil {
-		return x.Fixed_2
-	}
-	return 0
-}
+func (x *Message) GetFixed_2() uint64 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetSignedFixed_1() int32 {
-	if x != nil {
-		return x.SignedFixed_1
-	}
-	return 0
-}
+func (x *Message) GetSignedFixed_1() int32 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetSignedFixed_2() int64 {
-	if x != nil {
-		return x.SignedFixed_2
-	}
-	return 0
-}
+func (x *Message) GetSignedFixed_2() int64 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetFloat32() float32 {
-	if x != nil {
-		return x.Float32
-	}
-	return 0
-}
+func (x *Message) GetFloat32() float32 { _ = "STUB: not implemented"; return 0 }
 
-func (x *Message) GetFloat64() float64 {
-	if x != nil {
-		return x.Float64
-	}
-	return 0
-}
+func (x *Message) GetFloat64() float64 { _ = "STUB: not implemented"; return 0 }
 
 var File_fixtures_proto protoreflect.FileDescriptor
 
@@ -194,12 +116,7 @@ var (
 	file_fixtures_proto_rawDescData = file_fixtures_proto_rawDesc
 )
 
-func file_fixtures_proto_rawDescGZIP() []byte {
-	file_fixtures_proto_rawDescOnce.Do(func() {
-		file_fixtures_proto_rawDescData = protoimpl.X.CompressGZIP(file_fixtures_proto_rawDescData)
-	})
-	return file_fixtures_proto_rawDescData
-}
+func file_fixtures_proto_rawDescGZIP() []byte { _ = "STUB: not implemented"; return nil }
 
 var file_fixtures_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_fixtures_proto_goTypes = []any{
@@ -213,41 +130,5 @@ var file_fixtures_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_fixtures_proto_init() }
-func file_fixtures_proto_init() {
-	if File_fixtures_proto != nil {
-		return
-	}
-	if !protoimpl.UnsafeEnabled {
-		file_fixtures_proto_msgTypes[0].Exporter = func(v any, i int) any {
-			switch v := v.(*Message); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-	}
-	type x struct{}
-	out := protoimpl.TypeBuilder{
-		File: protoimpl.DescBuilder{
-			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_fixtures_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   1,
-			NumExtensions: 0,
-			NumServices:   0,
-		},
-		GoTypes:           file_fixtures_proto_goTypes,
-		DependencyIndexes: file_fixtures_proto_depIdxs,
-		MessageInfos:      file_fixtures_proto_msgTypes,
-	}.Build()
-	File_fixtures_proto = out.File
-	file_fixtures_proto_rawDesc = nil
-	file_fixtures_proto_goTypes = nil
-	file_fixtures_proto_depIdxs = nil
-}
+func init()                     { file_fixtures_proto_init() }
+func file_fixtures_proto_init() { _ = "STUB: not implemented"; return }

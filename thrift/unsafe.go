@@ -13,12 +13,6 @@ import (
 // in the program.
 type typeID struct{ ptr unsafe.Pointer }
 
-func makeTypeID(t reflect.Type) typeID {
-	return typeID{
-		ptr: (*[2]unsafe.Pointer)(unsafe.Pointer(&t))[1],
-	}
-}
+func makeTypeID(t reflect.Type) typeID { _ = "STUB: not implemented"; return *new(typeID) }
 
-func unsafeBytesToString(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
-}
+func unsafeBytesToString(b []byte) string { _ = "STUB: not implemented"; return "" }

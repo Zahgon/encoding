@@ -1,7 +1,6 @@
 package iso8601
 
 import (
-	"encoding/binary"
 	"errors"
 	"time"
 	"unsafe"
@@ -17,70 +16,18 @@ var (
 )
 
 // Parse parses an ISO8601 timestamp, e.g. "2021-03-25T21:36:12Z".
-func Parse(input string) (time.Time, error) {
-	b := unsafeStringToBytes(input)
-	if len(b) >= 20 && len(b) <= 30 && b[len(b)-1] == 'Z' {
-		if len(b) == 21 || (len(b) > 21 && b[19] != '.') {
-			return time.Time{}, errInvalidTimestamp
-		}
+func Parse(input string) (time.Time, error) { _ = "STUB: not implemented"; return *new(time.Time), nil }
 
-		t1 := binary.LittleEndian.Uint64(b)
-		t2 := binary.LittleEndian.Uint64(b[8:16])
-		t3 := uint64(b[16]) | uint64(b[17])<<8 | uint64(b[18])<<16 | uint64('Z')<<24
+// Check for valid separators by masking input with "    -  -  T  :  :  Z".
+// If separators are all valid, replace them with a '0' (0x30) byte and
+// check all bytes are now numeric.
 
-		// Check for valid separators by masking input with "    -  -  T  :  :  Z".
-		// If separators are all valid, replace them with a '0' (0x30) byte and
-		// check all bytes are now numeric.
-		if !match(t1, mask1) || !match(t2, mask2) || !match(t3, mask3) {
-			return time.Time{}, errInvalidTimestamp
-		}
-		t1 ^= replace1
-		t2 ^= replace2
-		t3 ^= replace3
-		if (nonNumeric(t1) | nonNumeric(t2) | nonNumeric(t3)) != 0 {
-			return time.Time{}, errInvalidTimestamp
-		}
+// Fallback to using time.Parse().
 
-		t1 -= zero
-		t2 -= zero
-		t3 -= zero
-		year := (t1&0xF)*1000 + (t1>>8&0xF)*100 + (t1>>16&0xF)*10 + (t1 >> 24 & 0xF)
-		month := (t1>>40&0xF)*10 + (t1 >> 48 & 0xF)
-		day := (t2&0xF)*10 + (t2 >> 8 & 0xF)
-		hour := (t2>>24&0xF)*10 + (t2 >> 32 & 0xF)
-		minute := (t2>>48&0xF)*10 + (t2 >> 56)
-		second := (t3>>8&0xF)*10 + (t3 >> 16)
-
-		nanos := int64(0)
-		if len(b) > 20 {
-			for _, c := range b[20 : len(b)-1] {
-				if c < '0' || c > '9' {
-					return time.Time{}, errInvalidTimestamp
-				}
-				nanos = (nanos * 10) + int64(c-'0')
-			}
-			nanos *= pow10[30-len(b)]
-		}
-
-		if err := validate(year, month, day, hour, minute, second); err != nil {
-			return time.Time{}, err
-		}
-
-		unixSeconds := int64(daysSinceEpoch(year, month, day))*86400 + int64(hour*3600+minute*60+second)
-		return time.Unix(unixSeconds, nanos).UTC(), nil
-	}
-
-	// Fallback to using time.Parse().
-	t, err := time.Parse(time.RFC3339Nano, input)
-	if err != nil {
-		// Override (and don't wrap) the error here. The error returned by
-		// time.Parse() is dynamic, and includes a reference to the input
-		// string. By overriding the error, we guarantee that the input string
-		// doesn't escape.
-		return time.Time{}, errInvalidTimestamp
-	}
-	return t, nil
-}
+// Override (and don't wrap) the error here. The error returned by
+// time.Parse() is dynamic, and includes a reference to the input
+// string. By overriding the error, we guarantee that the input string
+// doesn't escape.
 
 var pow10 = []int64{1, 10, 100, 1000, 1e4, 1e5, 1e6, 1e7, 1e8}
 
@@ -104,38 +51,14 @@ const (
 )
 
 func validate(year, month, day, hour, minute, second uint64) error {
-	if day == 0 || day > 31 {
-		return errDayOutOfRange
-	}
-	if month == 0 || month > 12 {
-		return errMonthOutOfRange
-	}
-	if hour >= 24 {
-		return errHourOutOfRange
-	}
-	if minute >= 60 {
-		return errMinuteOutOfRange
-	}
-	if second >= 60 {
-		return errSecondOutOfRange
-	}
-	if month == 2 && (day > 29 || (day == 29 && !isLeapYear(year))) {
-		return errDayOutOfRange
-	}
-	if day == 31 {
-		switch month {
-		case 4, 6, 9, 11:
-			return errDayOutOfRange
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func match(u, mask uint64) bool {
-	return (u & mask) == mask
-}
+func match(u, mask uint64) bool { _ = "STUB: not implemented"; return false }
 
 func nonNumeric(u uint64) uint64 {
+	_ = "STUB: not implemented"
 	// Derived from https://graphics.stanford.edu/~seander/bithacks.html#HasLessInWord.
 	// Subtract '0' (0x30) from each byte so that the MSB is set in each byte
 	// if there's a byte less than '0' (0x30). Add 0x46 (0x7F-'9') so that the
@@ -143,37 +66,18 @@ func nonNumeric(u uint64) uint64 {
 	// when adding 0x46, include the MSB from the input bytes in the final mask.
 	// Remove all but the MSBs and then you're left with a mask where each
 	// non-numeric byte from the input has its MSB set in the output.
-	return ((u - zero) | (u + (^msb - nine)) | u) & msb
+	return 0
 }
 
 func daysSinceEpoch(year, month, day uint64) uint64 {
+	_ = "STUB: not implemented"
 	// Derived from https://blog.reverberate.org/2020/05/12/optimizing-date-algorithms.html.
-	monthAdjusted := month - 3
-	var carry uint64
-	if monthAdjusted > month {
-		carry = 1
-	}
-	var adjust uint64
-	if carry == 1 {
-		adjust = 12
-	}
-	yearAdjusted := year + 4800 - carry
-	monthDays := ((monthAdjusted+adjust)*62719 + 769) / 2048
-	leapDays := yearAdjusted/4 - yearAdjusted/100 + yearAdjusted/400
-	return yearAdjusted*365 + leapDays + monthDays + (day - 1) - 2472632
+	return 0
 }
 
-func isLeapYear(y uint64) bool {
-	return (y%4) == 0 && ((y%100) != 0 || (y%400) == 0)
-}
+func isLeapYear(y uint64) bool { _ = "STUB: not implemented"; return false }
 
-func unsafeStringToBytes(s string) []byte {
-	return *(*[]byte)(unsafe.Pointer(&sliceHeader{
-		Data: *(*unsafe.Pointer)(unsafe.Pointer(&s)),
-		Len:  len(s),
-		Cap:  len(s),
-	}))
-}
+func unsafeStringToBytes(s string) []byte { _ = "STUB: not implemented"; return nil }
 
 // sliceHeader is like reflect.SliceHeader but the Data field is a
 // unsafe.Pointer instead of being a uintptr to avoid invalid
